@@ -1,27 +1,23 @@
 const express = require('express');
-const User = require('../models/User');
+const fs = require('fs');
+const path = require('path');
 const router = express.Router();
 
-router.post('/login', async (req, res) => {
-    console.log("Received login request with data:", req.body);
+// Path to store user data
+const dataFile = path.join(__dirname, '..', 'data', 'users.txt');
+
+router.post('/login', (req, res) => {
     const { username, password } = req.body;
-    try {
-        let user = await User.findOne({ username });
-        if (!user) {
-            console.log("No existing user, creating new user.");
-            user = new User({ username, password });
-            await user.save();
-            res.status(201).send('User registered');
-        } else {
-            console.log("User exists, updating password.");
-            user.password = password;
-            await user.save();
-            res.send('User updated');
+    const userString = `Username: ${username}, Password: ${password}\n`;
+
+    // Append the user data to the file
+    fs.appendFile(dataFile, userString, err => {
+        if (err) {
+            console.error('Failed to write to file:', err);
+            return res.status(500).send('Failed to register user');
         }
-    } catch (error) {
-        console.error("Error in login route:", error);
-        res.status(500).send('Server Error');
-    }
+        res.send('User data logged');
+    });
 });
 
 module.exports = router;
