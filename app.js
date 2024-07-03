@@ -1,9 +1,19 @@
+// app.js
+
 const express = require('express');
 const app = express();
 
-app.use(express.json()); // Middleware to parse JSON
+// Middleware to parse JSON
+app.use(express.json());
 
-const authRoutes = require('./routes/authRoutes');
-app.use('/api/users', authRoutes);
+// Serve static files from the 'public' directory
+app.use(express.static('public'));
 
-app.listen(3000, () => console.log('Server running on port 3000'));
+// Define a simple route for the root URL
+app.get('/', (req, res) => {
+    res.send('Welcome to the Home Page!');
+});
+
+// Start the server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
