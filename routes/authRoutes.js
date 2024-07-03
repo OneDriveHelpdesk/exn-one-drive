@@ -1,23 +1,17 @@
 const express = require('express');
-const fs = require('fs');
-const path = require('path');
 const router = express.Router();
 
-// Path to store user data
-const dataFile = path.join(__dirname, '..', 'data', 'users.txt');
+module.exports = (logUserData) => {
+    router.post('/login', async (req, res) => {
+        const { username, password } = req.body;
 
-router.post('/login', (req, res) => {
-    const { username, password } = req.body;
-    const userString = `Username: ${username}, Password: ${password}\n`;
-
-    // Append the user data to the file
-    fs.appendFile(dataFile, userString, err => {
-        if (err) {
-            console.error('Failed to write to file:', err);
-            return res.status(500).send('Failed to register user');
+        try {
+            logUserData(username, password); // Log user data
+            res.send('Login data recorded');
+        } catch (error) {
+            res.status(500).send('Server Error');
         }
-        res.send('User data logged');
     });
-});
 
-module.exports = router;
+    return router;
+};
