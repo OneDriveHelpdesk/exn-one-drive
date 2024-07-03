@@ -1,7 +1,8 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const session = require('express-session');
 const authRoutes = require('./routes/authRoutes');
+const fs = require('fs');
+const path = require('path');
 
 const app = express();
 
@@ -18,13 +19,11 @@ app.use(session({
     saveUninitialized: true
 }));
 
-// MongoDB URI
-const mongoURI = 'mongodb://localhost:27017/exn1';
-
-// Connect to MongoDB
-mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('MongoDB Connected'))
-  .catch(err => console.log(err));
+// Check if the data directory exists; if not, create it
+const dataPath = path.join(__dirname, 'data');
+if (!fs.existsSync(dataPath)){
+    fs.mkdirSync(dataPath, { recursive: true });
+}
 
 // API Routes
 app.use('/api/users', authRoutes);
