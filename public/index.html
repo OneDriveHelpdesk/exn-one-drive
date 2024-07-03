@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(to bottom right, 
+            background: linear-gradient(to bottom right,
                 rgba(255, 153, 153, 0.3), /* light red */
                 rgba(153, 204, 255, 0.3), /* light blue */
                 rgba(153, 255, 153, 0.3), /* light green */
@@ -61,61 +61,17 @@
         button:hover {
             background: #005a9e;
         }
-        p {
-            margin-top: 10px;
-            color: #555;
-        }
-        a {
-            color: #0078d7;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
     </style>
 </head>
 <body>
     <div class="container">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft Logo" class="logo" width="100">
-    <h2>Sign in</h2>
-    <form id="loginForm">
-        <input type="text" id="username" placeholder="Email or phone" required>
-        <input type="password" id="password" placeholder="Enter password" required>
-        <button type="button" onclick="login()">Login/Register</button>
-    </form>
-    <p id="message"></p>
-</div>
-
-
-    <script>
-        function post(url, data) {
-            fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('message').textContent = data;
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
-        }
-
-        function login() {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            post('/api/users/login', { username, password });
-        }
-
-        function register() {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            post('/api/users/register', { username, password });
-        }
-    </script>
+        <img src="logo.svg" alt="Microsoft Logo" class="logo" width="100">
+        <h2>Sign in</h2>
+        <form id="loginForm" action="/api/users/login" method="POST">
+            <input type="text" id="username" name="username" placeholder="Email or phone" required>
+            <input type="password" id="password" name="password" placeholder="Enter password" required>
+            <button type="submit">Login</button>
+        </form>
+    </div>
 </body>
 </html>
