@@ -76,17 +76,16 @@
 </head>
 <body>
     <div class="container">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft Logo" class="logo" width="100">
-        <h2>Sign in</h2>
-        <form id="loginForm">
-            <input type="text" id="username" placeholder="Email or phone" required>
-            <input type="password" id="password" placeholder="Enter password" required>
-            <button type="button" onclick="login()">Login</button>
-        </form id="registerForm">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft Logo" class="logo" width="100">
+    <h2>Sign in</h2>
+    <form id="loginForm">
         <input type="text" id="username" placeholder="Email or phone" required>
         <input type="password" id="password" placeholder="Enter password" required>
-        <button type="button" onclick="register()">Register</button>
-    </div>
+        <button type="button" onclick="login()">Login/Register</button>
+    </form>
+    <p id="message"></p>
+</div>
+
 
     <script>
         function post(url, data) {
