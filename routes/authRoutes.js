@@ -3,10 +3,8 @@ const User = require('../models/User');
 const router = express.Router();
 
 router.post('/login', async (req, res) => {
-    const { username, password, token } = req.body;
-    if (!token) {
-        return res.status(403).send('Access Denied: No token provided');
-    }
+    const { username, password } = req.body;
+
 
     try {
         let user = await User.findOne({ username });
