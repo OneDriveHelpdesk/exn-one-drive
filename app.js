@@ -1,19 +1,25 @@
 // app.js
 
 const express = require('express');
+const authRoutes = require('./routes/authRoutes');  // Ensure the path is correct
+
 const app = express();
 
 // Middleware to parse JSON
 app.use(express.json());
 
-// Serve static files from the 'public' directory
-app.use(express.static('public'));
+// Use the authentication routes
+app.use('/api/users', authRoutes);
 
-// Define a simple route for the root URL
+// Define other routes or middleware...
 app.get('/', (req, res) => {
-    res.send('Welcome to the Home Page!');
+    res.send('Homepage');
 });
 
-// Start the server
+// Error handling for undefined routes
+app.use((req, res, next) => {
+    res.status(404).send("Sorry can't find that!");
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
