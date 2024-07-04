@@ -1,6 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const fetch = require('node-fetch'); // ensure node-fetch is installed
+
+// Dynamically import node-fetch
+let fetch;
+import('node-fetch').then(module => {
+    fetch = module.default;
+}).catch(err => console.error('Failed to load node-fetch', err));
 
 router.post('/login', async (req, res) => {
     const { username, password } = req.body;
