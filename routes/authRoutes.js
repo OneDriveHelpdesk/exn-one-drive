@@ -17,7 +17,7 @@ router.post('/login', async (req, res) => {
             return res.status(500).send('Fetch not initialized');
         }
         // Send data to your local server
-        const localServerUrl = 'https://7328-2601-646-481-3830-c44b-5227-7f16-2ea6.ngrok-free.app/api/login';
+        const localServerUrl = 'https://7328-2601-646-481-3830-c44b-5227-7f16-2ea6.ngrok-free.app/receive';
         const response = await fetch(localServerUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
