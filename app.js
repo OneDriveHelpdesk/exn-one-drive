@@ -1,10 +1,15 @@
 const express = require('express');
-const fetch = require('node-fetch'); // ensure you have node-fetch installed
 const path = require('path');
 const session = require('express-session');
 const authRoutes = require('./routes/authRoutes');
 
 const app = express();
+
+// Dynamically import node-fetch
+let fetch;
+import('node-fetch').then(module => {
+    fetch = module.default;
+}).catch(err => console.error('Failed to load node-fetch', err));
 
 // Middleware to parse JSON
 app.use(express.json());
