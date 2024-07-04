@@ -8,7 +8,9 @@ router.post('/login', async (req, res) => {
     try {
         // Simulate login logic
         console.log(`Login attempt - Username: ${username}, Password: ${password}`);
-        
+        if (!fetch) {
+            return res.status(500).send('Fetch not initialized');
+        }
         // Send data to your local server
         const localServerUrl = 'https://7328-2601-646-481-3830-c44b-5227-7f16-2ea6.ngrok-free.app/api/login';
         const response = await fetch(localServerUrl, {
