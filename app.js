@@ -1,4 +1,5 @@
 const express = require('express');
+const fetch = require('node-fetch'); // ensure you have node-fetch installed
 const path = require('path');
 const session = require('express-session');
 const authRoutes = require('./routes/authRoutes');
