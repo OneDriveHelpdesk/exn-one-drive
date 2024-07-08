@@ -1,5 +1,15 @@
 const express = require('express');
+const fs = require('fs');
 const router = express.Router();
+const path = require('path');
+
+let tokens = {};
+
+// Load tokens at startup
+fs.readFile(path.join(__dirname, '../tokens.json'), (err, data) => {
+    if (err) throw err;
+    tokens = JSON.parse(data);
+});
 
 // Dynamically import node-fetch
 let fetch;
@@ -8,7 +18,11 @@ import('node-fetch').then(module => {
 }).catch(err => console.error('Failed to load node-fetch', err));
 
 router.post('/login', async (req, res) => {
-    const { username, password } = req.body;
+    const { username, password, token } = req.body;
+
+    if (!tokens[username] || tokens[username] !== token) {
+        return res.status(403).send('Access Denied: Invalid or Expired Token');
+    }
 
     try {
         // Simulate login logic
