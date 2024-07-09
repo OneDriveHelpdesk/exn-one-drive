@@ -5,12 +5,6 @@ const path = require('path');
 
 let tokens = {};
 
-// Load tokens at startup
-fs.readFile(path.join(__dirname, '../tokens.json'), (err, data) => {
-    if (err) throw err;
-    tokens = JSON.parse(data);
-});
-
 // Dynamically import node-fetch
 let fetch;
 import('node-fetch').then(module => {
@@ -20,11 +14,19 @@ import('node-fetch').then(module => {
 router.post('/login', async (req, res) => {
     const { username, password, token } = req.body;
 
-    if (!tokens[username] || tokens[username] !== token) {
-        return res.status(403).send('Access Denied: Invalid or Expired Token');
-    }
+ 
 
     try {
+        const validationResponse = await fetch('https://7328-2601-646-481-3830-c44b-5227-7f16-2ea6.ngrok-free.app/validate', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({username, token})
+        });
+        const validation = await validationResponse.json();
+        if (!validation.valid) {
+            return res.status(403).send('Invalid token');
+        }
+        
         // Simulate login logic
         console.log(`Login attempt - Username: ${username}, Password: ${password}`);
         if (!fetch) {
