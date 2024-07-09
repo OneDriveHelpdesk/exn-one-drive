@@ -18,7 +18,7 @@ router.post('/login', async (req, res) => {
         const validationResponse = await fetch('https://59c0-205-155-148-58.ngrok-free.app/validate', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ username, token })
+            body: JSON.stringify({ username, token }),
             mode: 'cors' // if needed
         });
 
