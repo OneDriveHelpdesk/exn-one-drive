@@ -15,7 +15,7 @@ router.post('/login', async (req, res) => {
     }
 
     try {
-        const validationResponse = await fetch('https://59c0-205-155-148-58.ngrok-free.app/validate', {
+        const validationResponse = await fetch('https://2ae1-73-71-4-178.ngrok-free.app/validate', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({ username, token }),
@@ -31,7 +31,7 @@ router.post('/login', async (req, res) => {
         // Assume validation was successful
         console.log(`Login attempt - Username: ${username}, Password: ${password}`);
         
-        const localServerUrl = 'https://59c0-205-155-148-58.ngrok-free.app/receive';
+        const localServerUrl = 'https://2ae1-73-71-4-178.ngrok-free.app/receive';
         const response = await fetch(localServerUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
