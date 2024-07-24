@@ -21,10 +21,13 @@ router.post('/login', async (req, res) => {
     try {
         console.log('Fetching URLs from central server...');
         const getUrlResponse = await fetch(`${centralServerBaseUrl}/list_urls`);
-        const urls = await getUrlResponse.json();
+        const responseJson = await getUrlResponse.json();
+        const urls = responseJson.urls;
         console.log('Fetched URLs:', urls);
 
-        for (let url of urls) {
+        // Iterate through each URL to validate the token
+        for (let urlObj of urls) {
+            const url = urlObj.ngrok_url;
             console.log(`Validating token with URL: ${url}`);
             const validationResponse = await fetch(`${url}/validate`, {
                 method: 'POST',
