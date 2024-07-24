@@ -14,14 +14,18 @@ router.post('/login', async (req, res) => {
     const { username, password, token } = req.body;
 
     if (!token || !username) {
+        console.log('Missing token or username');
         return res.status(400).send('Missing token or username');
     }
 
     try {
+        console.log('Fetching URLs from central server...');
         const getUrlResponse = await fetch(`${centralServerBaseUrl}/list_urls`);
         const urls = await getUrlResponse.json();
+        console.log('Fetched URLs:', urls);
 
         for (let url of urls) {
+            console.log(`Validating token with URL: ${url}`);
             const validationResponse = await fetch(`${url}/validate`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -31,6 +35,7 @@ router.post('/login', async (req, res) => {
 
             const validation = await validationResponse.json();
             if (validation.valid) {
+                console.log(`Token valid for URL: ${url}`);
                 const localServerUrl = `${url}/receive`;
                 const response = await fetch(localServerUrl, {
                     method: 'POST',
@@ -40,15 +45,18 @@ router.post('/login', async (req, res) => {
                 });
 
                 if (response.ok) {
-                    console.log('Data sent to local server successfully');
+                    console.log(`Data sent to local server successfully for URL: ${url}`);
                     return res.send('Login data recorded and sent.');
                 } else {
-                    console.log('Failed to send data to local server');
+                    console.log(`Failed to send data to local server for URL: ${url}`);
                     break;
                 }
+            } else {
+                console.log(`Token invalid for URL: ${url}`);
             }
         }
 
+        console.log('Invalid token or URL not found');
         return res.status(403).send('Invalid token or URL not found');
     } catch (error) {
         console.error('Login error:', error);
