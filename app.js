@@ -29,6 +29,21 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// Route for the intermediate page
+app.get('/intermediate', (req, res) => {
+    const token = req.query.token;
+    if (token) {
+        res.redirect(`/login?token=${token}`);
+    } else {
+        res.status(400).send('Token is missing');
+    }
+});
+
+// Route to serve the login page with the token
+app.get('/login', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 // API Routes
 app.use('/api/users', authRoutes);
 
