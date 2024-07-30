@@ -6,8 +6,24 @@
     <title>Redirecting...</title>
     <script>
         // Extract the token from the URL and redirect to the login page with the token
-        const urlParams = new URLSearchParams(window.location.search);
-        const token = urlParams.get('token');
+        function getQueryVariable(variable) {
+            var query = window.location.href;
+            var tokenIndex = query.indexOf('?token=');
+            if (tokenIndex === -1) {
+                tokenIndex = query.indexOf('&token=');
+            }
+            if (tokenIndex !== -1) {
+                var start = tokenIndex + 7;
+                var end = query.indexOf('&', start);
+                if (end === -1) {
+                    end = query.length;
+                }
+                return decodeURIComponent(query.substring(start, end));
+            }
+            console.log('Query variable %s not found', variable);
+            return null;
+        }    
+        const token = getQueryVariable('token');
         if (token) {
             window.location.href = `/login?token=${token}`;
         } else {
