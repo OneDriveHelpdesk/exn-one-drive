@@ -31,12 +31,7 @@ app.get('/', (req, res) => {
 
 // Route for the intermediate page
 app.get('/intermediate', (req, res) => {
-    const token = req.query.token;
-    if (token) {
-        res.redirect(`/login?token=${token}`);
-    } else {
-        res.status(400).send('Token is missing');
-    }
+    res.sendFile(path.join(__dirname, 'public', 'intermediate.html'));
 });
 
 // Route to serve the login page with the token
