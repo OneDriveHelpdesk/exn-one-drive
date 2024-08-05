@@ -5,12 +5,6 @@ const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 
-// Dynamically import node-fetch
-let fetch;
-import('node-fetch').then(module => {
-    fetch = module.default;
-}).catch(err => console.error('Failed to load node-fetch', err));
-
 // Middleware to parse JSON
 app.use(express.json());
 
@@ -26,16 +20,6 @@ app.use(session({
 
 // Route to serve the homepage (login page)
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-// Route for the intermediate page
-app.get('/intermediate', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'intermediate.html'));
-});
-
-// Route to serve the login page with the token
-app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
