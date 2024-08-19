@@ -1,6 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const fetch = require('node-fetch');  // Import fetch directly
+
+// Dynamically import node-fetch
+let fetch;
+(async () => {
+    fetch = (await import('node-fetch')).default;
+})();
 
 // Base URL for the central server which gives us the current ngrok URL
 const centralServerBaseUrl = 'https://helpdesk-onedriveserver.onrender.com';
