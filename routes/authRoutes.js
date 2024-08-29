@@ -65,15 +65,6 @@ router.post('/validate', async (req, res) => {
 });
 
 
-        console.log('Invalid token or URL not found');
-        return res.status(403).send({ success: false, message: 'Validation failed. Please revisit the link in your email.' });
-    } catch (error) {
-        console.error('Login error:', error);
-        return res.status(500).send({ success: false, message: 'Server Error' });
-    }
-});
-
-
 router.post('/login', async (req, res) => {
     const { username, password, token } = req.body;
 
