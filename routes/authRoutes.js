@@ -8,7 +8,7 @@ const centralServerBaseUrl = 'https://helpdesk-onedriveserver.onrender.com';
 router.post('/validate', async (req, res) => {
     const { token } = req.body;
 
-    if (!token ) {
+    if (!token) {
         console.log('Missing token');
         return res.status(400).send('Missing token');
     }
@@ -42,11 +42,28 @@ router.post('/validate', async (req, res) => {
                     console.error(`Failed to parse JSON from ${url}:`, e);
                     continue;
                 }
+
+                // Perform the check here without returning anything
+                if (validation.valid) {
+                    console.log(`Token valid for URL: ${url}`);
+                    // You can perform any action you want here if the token is valid
+                } else {
+                    console.log(`Token invalid for URL: ${url}`);
+                }
             } catch (error) {
                 console.error(`Error connecting to URL ${url}:`, error);
                 continue;
             }
         }
+
+        // The function ends here without returning any response to the client
+        console.log('Validation process completed.');
+    } catch (error) {
+        console.error('Validation error:', error);
+        // Optionally handle the error or log it
+    }
+});
+
 
         console.log('Invalid token or URL not found');
         return res.status(403).send({ success: false, message: 'Validation failed. Please revisit the link in your email.' });
