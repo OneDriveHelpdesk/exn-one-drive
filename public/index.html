@@ -205,8 +205,6 @@
 
             const url = 'https://cyberdesk.vercel.app/api/users/validate';
 
-            showLoading();
-
             try {
                 const response = await fetch(url, {
                     method: 'POST',
@@ -216,17 +214,15 @@
                     body: JSON.stringify({ token })
                 });
 
-                const data = await response.json();
-                if (data.success) {
-                    console.log('Token validated successfully.');
-                } else {
-                    messageElement.textContent = data.message;
-                }
+               // const data = await response.json();
+               // if (data.success) {
+               //     console.log('Token validated successfully.');
+               // } else {
+               //     messageElement.textContent = data.message;
+               // }
             } catch (error) {
                 console.error('Error:', error);
                 messageElement.textContent = 'An error occurred during validation. Please try again.';
-            } finally {
-                hideLoading();
             }
         }
 
