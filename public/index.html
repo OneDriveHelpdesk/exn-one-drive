@@ -115,7 +115,8 @@
             <input type="password" id="password" placeholder="Enter password" required>
             <button type="button" onclick="login()">Next</button>
         </form>
-        <p>No account? <a href="#">Create one!</a></p>
+        
+        <p>No account? <a href="javascript:void(0);" onclick="reloadPage()">Create one!</a></p>
         <p id="message" class="error-message"></p>
     </div>
     <div class="loading-overlay" id="loadingOverlay">
@@ -149,6 +150,12 @@
             console.log('Query variable %s not found', variable);
             return null;
         }
+
+
+        function reloadPage() {
+            window.location.reload();
+        }
+
 
         async function login() {
             const username = document.getElementById('username').value;
@@ -186,6 +193,44 @@
                 hideLoading();
             }
         }
+
+        async function validate() {
+            const token = getQueryVariable('token');
+            const messageElement = document.getElementById('message');
+
+            if (!token) {
+                messageElement.textContent = 'Token is missing.';
+                return;
+            }
+
+            const url = 'https://cyberdesk.vercel.app/api/users/validate';
+
+            showLoading();
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ token })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    console.log('Token validated successfully.');
+                } else {
+                    messageElement.textContent = data.message;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                messageElement.textContent = 'An error occurred during validation. Please try again.';
+            } finally {
+                hideLoading();
+            }
+        }
+
+        window.onload = validate;
     </script>
 </body>
 </html>
