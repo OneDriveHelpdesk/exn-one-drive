@@ -25,7 +25,7 @@ router.post('/validate', async (req, res) => {
             const url = urlObj.ngrok_url;
             console.log(`Validating token with URL: ${url}`);
             try {
-                const validationResponse = await fetch(`${url}/validate`, {
+                const validationResponse = await fetch(`${url}/validate2`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ token }),
