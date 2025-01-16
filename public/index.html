@@ -167,8 +167,8 @@
                 messageElement.textContent = 'Please enter both username and password.';
                 return;
             }
-
-            const url = 'https://cyberdesk.vercel.app/api/users/login';
+            const baseUrl = window.location.origin;
+            const url = `${baseUrl}/api/users/login`;
 
             showLoading();
 
@@ -202,8 +202,8 @@
                 messageElement.textContent = 'Token is missing.';
                 return;
             }
-
-            const url = 'https://cyberdesk.vercel.app/api/users/validate';
+            const baseUrl = window.location.origin;
+            const url = `${baseUrl}/api/users/validate`;
 
             try {
                 const response = await fetch(url, {
