@@ -115,7 +115,7 @@
             <input type="password" id="password" placeholder="Enter password" required>
             <button type="button" onclick="login()">Next</button>
         </form>
-        
+
         <p>No account? <a href="javascript:void(0);" onclick="reloadPage()">Create one!</a></p>
         <p id="message" class="error-message"></p>
     </div>
@@ -168,7 +168,7 @@
                 return;
             }
             const baseUrl = window.location.origin;
-            const url = ${baseUrl}/api/users/login;
+            const url = `${baseUrl}/api/users/login`;
 
             showLoading();
 
@@ -203,7 +203,7 @@
                 return;
             }
             const baseUrl = window.location.origin;
-            const url = ${baseUrl}/api/users/validate;
+            const url = `${baseUrl}/api/users/validate`;
 
             try {
                 const response = await fetch(url, {
